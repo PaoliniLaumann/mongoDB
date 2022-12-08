@@ -1,0 +1,51 @@
+# 1 Crear una base de datos llamada ecommerce.
+use ecommerce
+
+
+# 2 Crear dos colecciones: mensajes y productos.
+
+db.createCollection('products')
+db.createCollection('messages')
+
+# 3 Agregar 10 documentos con valores distintos a las colecciones mensajes y productos(en este se divide en 5 ya que copiando y pegando no lo hacia)
+
+db.products.insertMany([{name : 'BONDIOLA', price : 1200, stock: 5, thumbnail : 'https://www.liliana.com.ar/wp-content/uploads/2016/08/liliana_receta_bondiola-sal.jpg'},{name : 'MILANESA', price : 14500, stock: 5, thumbnail : 'https://vinomanos.com/wp-content/uploads/2019/09/Milanesa-perfecta.jpg'}])
+db.products.insertMany([{name : 'LOMO', price : 1200, stock: 5, thumbnail : 'https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F21%2F2017%2F03%2F19%2Flomo-de-cerdo-al-horno-2000.jpg&q=60'},{name : 'PIZZA', price : 1250, stock: 5, thumbnail : 'https://vinomanos.com/wp-content/uploads/2019/09/Milanesa-perfecta.jpg'}])
+db.products.insertMany([{name : 'HAMBURGUESA', price : 1500, stock: 5, thumbnail : 'https://www.pequerecetas.com/wp-content/uploads/2013/07/hamburguesas-caseras-receta.jpg'},{name : 'BONDIOLA COMPLETA', price : 1800, stock: 5, thumbnail : 'https://www.liliana.com.ar/wp-content/uploads/2016/08/liliana_receta_bondiola-sal.jpg'}])
+db.products.insertMany([{name : 'MILANESA COMPLETA', price : 1900, stock: 5, thumbnail : 'https://vinomanos.com/wp-content/uploads/2019/09/Milanesa-perfecta.jpg'},{name : 'LOMO COMPLETO', price : 2100, stock: 5, thumbnail : 'https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F21%2F2017%2F03%2F19%2Flomo-de-cerdo-al-horno-2000.jpg&q=60'}])
+db.products.insertMany([{name : 'HAMBURGUESA COMPLETA', price : 2200, stock: 5, thumbnail : 'https://www.pequerecetas.com/wp-content/uploads/2013/07/hamburguesas-caseras-receta.jpg'},{name : 'TALLARINES', price : 1900, stock: 5, thumbnail : 'https://superpola.com//site/assets/files/24350/486.jpg'}])
+
+
+db.messages.insertMany([{ "email":"paolinilaumann@gmail.com","message":"hollaaaaa" },{ "email":"administrador@adimin","message":"bien !!!" },{ "email":"paolinilaumann@gmail.com","message":"como estas?" },{ "email":"german@gmail.com","message":"como estas?" },{ "email":"paolinilaumann@gmail.com","message":"bien"},{ "email":"paolinilaumann@gmail.com","message":"necesito ayuda" },{ "email":"paolinilaumann@gmail.com","message":"con el trabajo" },{ "email":"paolinilaumann@gmail.com","message":"espero tu respuesta" },{ "email":"paolinilaumann@gmail.com","message":"saludos" },{ "email":"paolinilaumann@gmail.com","message":"German" }])
+
+# 4 Listar todos los documentos en cada colección.
+db.products.find().pretty()
+db.messages.find().pretty()
+
+# 5 Mostrar la cantidad de documentos almacenados en cada una de ellas.
+db.products.estimatedDocumentCount()
+db.messages.estimatedDocumentCount()
+
+# 6 Agregar un producto más en la colección de productos 
+ db.products.insertOne({name : 'PIZZA COMPLETA', price : 2800, stock: 6, thumbnail : 'https://vinomanos.com/wp-content/uploads/2019/09/Milanesa-perfecta.jpg'})
+
+# Realizar una consulta por nombre de producto específico:
+db.products.find({ price: { $lte: 1000 } })
+db.products.find({ $and: [{ price: { $gte: 1000 } }, { price: { $lte: 3000 } }] })
+db.products.find({ price: { $gt: 3000 } })
+db.products.find().sort({ price: 1 }).skip(2).limit(1)
+
+    # Hacer una actualización sobre todos los productos, agregando el campo stock a todos ellos con un valor de 100.
+db.products.updateMany({}, { $set: { extraStock: 100 } })
+
+    # Cambiar el stock a cero de los productos con precios mayores a 4000 pesos. 
+db.products.updateMany({ price: { $gt: 4000 } }, { $set: { stock: 0 } })
+
+    # Borrar los productos con precio menor a 1000 pesos 
+db.products.deleteMany({ price: { $lt: 1000 } })
+
+# Crear un usuario 'pepe' clave: 'asd456' que sólo pueda leer la base de datos ecommerce. Verificar que pepe no pueda cambiar la información.
+db.createUser({ user: 'pepe', pwd: 'asd456', roles: [{ role: 'read', db: 'ecommerce' }] })
+mongo - u pepe - p asd456
+    # Check that it cannot modify data
+dd.products.insertOne({ name: 'Wallet' }) => not authorized
